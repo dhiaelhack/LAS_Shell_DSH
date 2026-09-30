@@ -18,6 +18,11 @@ LAS Shell is a small Unix-style command-line shell written in C. It provides an 
 
 This is a learning project and does not aim to implement every behavior or edge case of Bash or POSIX shells.
 
+## Contributors
+
+- Slim
+- Dhia Nsibi
+
 ## Requirements
 
 - Linux or another Unix-like operating system.
