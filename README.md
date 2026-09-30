@@ -1,66 +1,105 @@
 # LAS Shell
 
-A comprehensive UNIX shell implementation in C, supporting built-in commands, external program execution, piping, redirection, job control, and scripting capabilities.
-
-## Overview
-
-LAS Shell is a fully functional command-line interpreter designed and implemented from scratch in C. It provides a robust environment for command execution with features comparable to traditional UNIX shells.
+LAS Shell is a small Unix-style command-line shell written in C. It provides an interactive prompt, several built-in commands, and support for running external programs, scripts, pipelines, and basic redirections.
 
 ## Features
 
-### Core Functionality
-- **Built-in Commands**: cd, pwd, echo, env, setenv, unsetenv, which, exit
-- **External Command Execution**: Full support for system commands
-- **Command Parsing**: Advanced tokenization with quote handling
-- **Signal Handling**: Proper SIGINT (Ctrl+C) management
+- Built-ins: `cd`, `pwd`, `echo`, `env`, `setenv`, `unsetenv`, `which`, `alias`, `unalias`, `history`, `source` (or `.`), `jobs`, `fg`, `bg`, and `exit`.
+- External commands launched through the system's `PATH`.
+- Single and double quote handling in command arguments.
+- Pipelines using `|`.
+- Input redirection with `<`, output redirection with `>`, and append redirection with `>>`.
+- Command sequencing and conditional operators: `;`, `&&`, and `||`.
+- Background commands using `&`, with basic `jobs`, `fg`, and `bg` support.
+- Command substitution using `$(...)`.
+- Command history and aliases, saved in `.las_shell_history` and `.las_aliases` in the current working directory.
+- Script execution from a file.
+- A prompt that displays the current directory and last command status.
 
-### Advanced Features
-- **Pipes**: Support for command piping (|) with multiple stages
-- **Redirections**: Input (<), output (>), and append (>>) redirections
-- **Control Operators**: Command sequencing (;), conditional execution (&&, ||)
-- **Background Processes**: Asynchronous execution with job control (&)
-- **Job Management**: jobs, fg, bg commands for process control
-
-### User Experience
-- **Command History**: Navigation through previous commands with arrow keys
-- **Aliases**: Persistent alias creation and management
-- **Command Substitution**: $(command) syntax with nested substitution support
-- **Script Execution**: Shebang support for script files
-- **Custom Prompt**: Configurable prompt with exit status indication
-
-## Technical Architecture
-
-### Component Structure
-- **Command Parser**: Tokenizes input with quote and whitespace handling
-- **Execution Engine**: Manages process creation and pipeline construction
-- **Memory Management**: Systematic allocation and deallocation
-- **Signal Handlers**: Graceful interruption handling
-- **State Management**: Environment variables, aliases, job control
-
-### Key Modules
-- `main.c`: Core shell loop and command dispatching
-- `commands.c`: Built-in command implementations
-- `parser.c`: Input parsing and tokenization
-- `execution.c`: Process execution and pipeline management
-- `job_control.c`: Background process and job management
-- `alias.c`: Alias storage and expansion
-- `history.c`: Command history with readline integration
+This is a learning project and does not aim to implement every behavior or edge case of Bash or POSIX shells.
 
 ## Requirements
 
-- GCC compiler
-- GNU Readline library
-- UNIX-like operating system (Linux, macOS)
+- Linux or another Unix-like operating system.
+- GCC and GNU Make.
+- GNU Readline development headers and library.
 
-## Installation
+On Debian or Ubuntu, install the build dependencies with:
 
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/las-shell.git
-cd las-shell
+```sh
+sudo apt install build-essential libreadline-dev
+```
 
-# Compile the source
+## Build
+
+```sh
+git clone https://github.com/dhiaelhack/LAS_Shell_DSH.git
+cd LAS_Shell_DSH
 make
+```
 
-# Install system-wide (optional)
-sudo make install
+The build creates the `las_shell` executable in the project directory. To remove generated object files and the executable, run `make clean`.
+
+## Run
+
+Start an interactive session:
+
+```sh
+./las_shell
+```
+
+Run a script file:
+
+```sh
+./las_shell path/to/script.sh
+```
+
+Run one command and exit:
+
+```sh
+./las_shell -c 'echo hello'
+```
+
+## Examples
+
+```sh
+pwd
+cd /tmp
+echo "Current directory: $(pwd)"
+ls -la | grep README
+echo hello > greeting.txt
+echo again >> greeting.txt
+cat < greeting.txt
+false || echo "The previous command failed"
+sleep 10 &
+jobs
+alias ll='ls -la'
+ll
+```
+
+Aliases can also be managed with `unalias name`. The `source file` command executes commands from a file in the current shell session. History and aliases are loaded and saved between sessions in the current working directory.
+
+## Project layout
+
+| File | Responsibility |
+| --- | --- |
+| `main.c` | Interactive shell loop, prompt input, and command dispatch |
+| `Commands.c` | Built-in commands and script/source command handling |
+| `input_parser.c` | Tokenization and quote handling |
+| `pipes.c` | Pipeline parsing and execution |
+| `redirection.c` | Input and output redirection |
+| `operators.c` | Command sequencing and basic job tracking |
+| `substitution.c` | `$(...)` command substitution |
+| `script.c` | Script and command-line execution paths |
+| `alias.c` | Alias storage, persistence, and expansion |
+| `history.c` | Readline history, signal handling, and completion |
+| `prompt.c` | Prompt generation and exit status |
+| `helper.c` | String and environment helper functions |
+| `my_own_shell.h` | Shared declarations and data structures |
+| `makefile` | Build rules |
+
+## Notes
+
+- The implementation is intentionally compact and has not been verified as a complete POSIX shell. Complex quoting, nested combinations of operators, and advanced job control may behave differently from Bash.
+- The makefile links against GNU Readline with `-lreadline`.
+- `make clean` also removes `.las_shell_history` and `.las_aliases` from the project directory.
